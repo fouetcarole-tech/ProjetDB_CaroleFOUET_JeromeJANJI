@@ -1,0 +1,20 @@
+Tu travailles dans le domaine de la santé. Ton laboratoire est un laboratoire de recherche dont l'activité est la recherche de traitements contre le cancer, en particulier par immunothérapie (anticorps thérapeutiques, vaccins anticancéreux, thérapies cellulaires de type CAR-T). C'est une organisation de recherche publique ou à but non lucratif comme l'Institut Curie, Gustave Roussy, le Centre de Recherche en Cancérologie de Lyon ou une unité Inserm.
+
+Ton laboratoire collecte des données sur :
+- les équipes de recherche et leurs membres (chercheurs, techniciens, doctorants) 
+- les projets de recherche et leurs financements 
+- les molécules ou traitements candidats étudiés 
+- les essais cliniques et les patients qui y participent (données anonymisées) 
+- les expériences et analyses réalisées, ainsi que leurs résultats 
+- les équipements du laboratoire 
+- les partenaires (hôpitaux, industriels pharmaceutiques, autres laboratoires) 
+
+Inspire-toi des sites web suivants : https://www.gustaveroussy.fr, https://curie.fr et la page de l'Institut National du Cancer consacrée à l'immunothérapie (https://www.e-cancer.fr).
+
+Ton laboratoire veut appliquer MERISE pour concevoir un système d'information. Tu es chargé de la partie analyse, c'est-à-dire de collecter les besoins auprès du laboratoire. Il a fait appel à un étudiant en ingénierie informatique pour réaliser ce projet, tu dois lui fournir les informations nécessaires pour qu'il applique ensuite lui-même les étapes suivantes de conception et développement de la base de données.
+
+D'abord, établis les règles de gestion des données de ton laboratoire, sous la forme d'une liste à puces. Elles doivent correspondre aux informations que fournit quelqu'un qui connaît le fonctionnement du laboratoire, mais pas la manière dont se construit un système d'information.
+
+Ensuite, à partir de ces règles, fournis un dictionnaire de données brutes avec les colonnes suivantes, regroupées dans un tableau : signification de la donnée, type, taille en nombre de caractères ou de chiffres. Il doit y avoir entre 25 et 35 données. Il sert à fournir des informations supplémentaires sur chaque donnée (taille et type), mais sans a priori sur la manière dont les données seront modélisées ensuite.
+
+Fournis donc les règles de gestion et le dictionnaire de données.
