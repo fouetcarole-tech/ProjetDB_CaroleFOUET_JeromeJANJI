@@ -2,7 +2,7 @@
 
 **Binôme :** Carole FOUET, Jérome JANJI
 **Cours :** TI503N, Bases de données 1 (EFREI)
-**Avancement :** Partie 1 (étapes 1 et 2)
+**Avancement :** Partie 1 et 2
 
 ## 1. Présentation du projet
 Le but du projet est de créer une base de données sur la recherche de traitement contre le cancer en particulier par immunothérapie, comme l'Institut Curie, Gustave Roussy, le Centre de Recherche en Cancérologie de Lyon ou une unité Inserm.
