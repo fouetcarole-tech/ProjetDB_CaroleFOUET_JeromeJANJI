@@ -828,3 +828,69 @@ Liste des fichiers : README.md, prompt.txt, mcd.png, looping_projetBD.loo.
 ## 5. Répartition du travail
 Jérome JANJI -> prompt.txt + README.md
 Carole FOUET -> looping_projetBD.loo + mcd.png
+
+# Partie 2 : MLD/MPD, insertion et requêtes
+
+Cette section est à ajouter au `README.md` après la partie 1. Les scripts s'exécutent dans cet ordre sur MySQL 8 / MariaDB :
+
+| Fichier | Contenu |
+| --- | --- |
+| `1_creation.sql` | MPD : création des 15 tables, clés primaires et étrangères |
+| `2_contraintes.sql` | Contraintes additionnelles (CHECK, UNIQUE, triggers) |
+| `3_insertion.sql` | Jeu de données fictif et requêtes de vérification |
+| `4_scenario.sql` | Scénario d'utilisation et requêtes DML |
+| `prompt_insertion.txt` | Prompt utilisé pour générer les données |
+
+## Étape 3 : MLD
+
+Clé primaire en gras, clé étrangère précédée de `#`.
+
+- LABORATOIRE (**id_laboratoire**, nom_laboratoire)
+- EQUIPE (**id_equipe**, nom_equipe, #id_laboratoire)
+- CHERCHEUR (**id_chercheur**, nom_chercheur, prenom_chercheur, nom_metier, #id_equipe, #id_superieur)
+- COLLABORATEUR (**id_collaborateur**, nom_collaborateur)
+- PROJET (**id_projet**, nom_projet, date_debut, date_fin)
+- PUBLICATION (**id_publication**, titre, date_publication, #id_projet)
+- MOLECULE (**id_molecule**, nom_molecule, type_traitement)
+- ESSAI (**id_essai**, **#id_projet**, **#id_molecule**, nom_essai, resultat)
+- PATIENT (**id_patient**, code_anonyme, type_cancer, annee_naissance)
+- ECHANTILLON (**num_echantillon**, **#id_patient**, type_echantillon, date_prelevement, condition_conservation)
+- EQUIPEMENT (**id_equipement**, nom_equipement, date_acquisition)
+- ETUDIER (**#id_chercheur**, **#id_projet**)
+- FINANCE (**#id_collaborateur**, **#id_projet**, montant, date_financement)
+- PARTICIPE (**#id_essai**, **#id_projet**, **#id_molecule**, **#id_patient**, date_participation)
+- UTILISER (**#id_essai**, **#id_projet**, **#id_molecule**, **#id_equipement**)
+
+Choix de transformation :
+
+- L'association récursive `diriger` devient la clé étrangère `id_superieur` dans CHERCHEUR (cardinalité 0,1 : elle est NULL au sommet de la hiérarchie).
+- Les entités faibles ESSAI et ECHANTILLON ont une clé primaire composée de leur numéro et de la clé de leur entité forte.
+- L'association ternaire `tester` est absorbée par ESSAI (cardinalité 1,1 côté essai), dont la clé contient `id_projet` et `id_molecule`.
+- Les associations (x,n)-(x,n) `etudier`, `finance`, `participe` et `utiliser` deviennent des tables.
+- Types : ceux du dictionnaire de données (taille en caractères pour les VARCHAR). Le montant est en `DECIMAL(12,2)` (10 chiffres plus les centimes), les identifiants en `INT`, les dates en `DATE`.
+
+## Contraintes additionnelles (`2_contraintes.sql`)
+
+| Règle de gestion | Contrainte |
+| --- | --- |
+| Identifiants numériques de n chiffres (dictionnaire) | `CHECK` sur chaque identifiant |
+| Un membre est chercheur, technicien ou doctorant | `ck_chercheur_metier` |
+| Un membre ne peut pas être son propre responsable | `ck_chercheur_superieur` |
+| Date de fin d'un projet postérieure à sa date de début | `ck_projet_dates` |
+| Un financement a un montant positif | `ck_finance_montant` |
+| Type de traitement parmi trois valeurs | `ck_molecule_type` |
+| Essais numérotés à l'intérieur de chaque projet | `UNIQUE (id_projet, id_essai)` |
+| Code anonyme unique, de la forme P-000042 | `uq_patient_code`, `ck_patient_code` (REGEXP) |
+| Année de naissance vraisemblable | `ck_patient_naissance` |
+| Date de prélèvement ou de participation non postérieure à aujourd'hui | 4 triggers (MySQL interdit `CURDATE()` dans un `CHECK`) |
+
+Règles qui ne s'expriment pas en SQL pur : les cardinalités minimales 1,n (un projet a au moins un membre et un financeur), et l'absence de cycle dans la hiérarchie. Les requêtes de fin de `3_insertion.sql` vérifient les premières.
+
+## Étape 4 : données
+
+Le jeu de données (fictif, patients anonymisés) contient 3 laboratoires, 6 équipes, 20 membres sur 3 niveaux hiérarchiques, 6 collaborateurs, 8 projets, 7 molécules, 11 essais (dont 6 en cours), 16 patients, 23 échantillons, 24 participations et 23 utilisations d'équipements. Il est inséré après les contraintes, donc chaque ligne est contrôlée par la base.
+
+## Étape 5 : scénario
+
+Lundi 9 novembre 2026, la responsable scientifique prépare le comité de suivi annuel (partie A : 16 requêtes de consultation : jointures, agrégats, sous-requêtes, auto-jointure, requête récursive). Puis l'ingénieur de données saisit un nouveau patient, corrige un doublon, enregistre un résultat et met à jour un financement (partie B : INSERT, UPDATE, DELETE). Enfin, 8 saisies invalides sont testées pour montrer que les contraintes les refusent (partie C).
+
